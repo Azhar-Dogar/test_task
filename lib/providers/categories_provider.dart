@@ -13,7 +13,7 @@ class CategoriesProvider with ChangeNotifier{
   }
 
   List<CategoryModel> categories = [];
-
+  bool isLoading = true;
   Future<void> fetchCategories() async {
     String url = "${Constants.baseUrl}/categories";
 
@@ -22,21 +22,16 @@ class CategoriesProvider with ChangeNotifier{
 
     if (response.statusCode == 200) {
       print(response.body);
-      var decoded = jsonDecode(response.body);
+      var decoded = await jsonDecode(response.body);
       final List<dynamic> categoriesList = decoded ?? [];
       categoriesList.forEach((e){
         CategoryModel categoryModel = CategoryModel.fromJson(e);
         categories.add(categoryModel);
       });
-      // totalProducts = productsJson
-      //     .map((json) => Product.fromJson(json as Map<String, dynamic>))
-      //     .toList();
-      // filteredProducts = totalProducts;
-      print("totsl categories");
-      print(categories.length);
-
+      isLoading = false;
       notifyListeners();
     } else {
+      isLoading = false;
       throw Exception('Failed to load products: ${response.statusCode}');
     }
   }

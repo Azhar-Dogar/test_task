@@ -53,7 +53,13 @@ class _CategoriesState extends State<Categories> {
                 MarginWidget(),
                 TextFieldWidget(controller: searchController),
                 MarginWidget(),
-                categoriesList(value, value2),
+                if (value.isLoading) ...[
+                  Expanded(child: Center(child: CircularProgressIndicator())),
+                ] else if (value.categories.isEmpty) ...[
+                  Expanded(child: Center(child: Text("No Category Found"))),
+                ] else ...[
+                  categoriesList(value, value2),
+                ],
               ],
             ),
           );
@@ -70,8 +76,8 @@ class _CategoriesState extends State<Categories> {
       catList = value.categories
           .where(
             (product) =>
-            product.name.toLowerCase().contains(searchText.toLowerCase()),
-      )
+                product.name.toLowerCase().contains(searchText.toLowerCase()),
+          )
           .toList();
     }
     return Expanded(

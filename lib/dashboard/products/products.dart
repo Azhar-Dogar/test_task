@@ -48,7 +48,13 @@ class _ProductsState extends State<Products> {
               MarginWidget(),
               TextFieldWidget(controller: searchController),
               MarginWidget(factor: 1.3),
-              productsList(value),
+              if (value.isLoading) ...[
+                Expanded(child: Center(child: CircularProgressIndicator())),
+              ] else if (value.totalProducts.isEmpty)
+                ...[Expanded(child: Center(child: Text("No Product Found"),))]
+              else ...[
+                productsList(value),
+              ],
             ],
           ),
         ),

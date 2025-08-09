@@ -10,9 +10,8 @@ class ProductsProvider with ChangeNotifier {
   ProductsProvider() {
     fetchProducts();
   }
-
-  List<ProductModel> totalProducts = [];
-  List<ProductModel> filteredProducts = []; // search results
+  bool isLoading = true;
+  List<ProductModel> totalProducts = [];// search results
   List<ProductModel> categoryProducts = [];
   List<ProductModel> favourites = [];
 
@@ -27,7 +26,6 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> fetchProducts() async {
     totalProducts = [];
-    filteredProducts = [];
     String url = "${Constants.baseUrl}?limit=100";
 
     final uri = Uri.parse(url);
@@ -35,17 +33,15 @@ class ProductsProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       // print(response.body);
-      final Map<String, dynamic> decoded = jsonDecode(response.body);
+      final Map<String, dynamic> decoded = await jsonDecode(response.body);
       final List<dynamic> productsJson = decoded['products'] ?? [];
       totalProducts = productsJson
           .map((json) => ProductModel.fromJson(json as Map<String, dynamic>))
           .toList();
-      filteredProducts = totalProducts;
-      print("totsl products");
-      print(totalProducts.length);
-
+      isLoading = false;
       notifyListeners();
     } else {
+      isLoading = false;
       throw Exception('Failed to load products: ${response.statusCode}');
     }
   }
